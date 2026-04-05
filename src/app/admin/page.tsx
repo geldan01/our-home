@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { promoteToAdmin, demoteToMember } from "@/lib/auth-actions";
 import { prisma } from "@/lib/prisma";
-import { Role } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma";
 
 function PromoteButton({ userId }: { userId: string }) {
   const promoteAction = promoteToAdmin.bind(null, userId);

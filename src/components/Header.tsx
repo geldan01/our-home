@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { logout } from "@/lib/auth-actions";
-import { Role } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma";
 
 export default async function Header() {
   const session = await auth();

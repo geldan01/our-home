@@ -50,7 +50,7 @@ export default async function DashboardPage() {
           {/* ── Shared Todos ── Warm notepad style */}
           <Link
             href="/dashboard/todos"
-            className="group relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-amber-900/40 dark:from-amber-950/40 dark:to-orange-950/30"
+            className="group relative overflow-hidden rounded-2xl border border-amber-200/80 bg-linear-to-br from-amber-50 to-orange-50 p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-amber-900/40 dark:from-amber-950/40 dark:to-orange-950/30"
           >
             <div className="absolute top-0 right-0 h-16 w-16 translate-x-4 -translate-y-4 rounded-full bg-amber-200/30 dark:bg-amber-800/20" />
             <div className="flex items-center gap-3">
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
           </Link>
 
           {/* ── TV Shows ── Cozy cinema/living room style */}
-          <div className="relative overflow-hidden rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50 to-indigo-50 p-6 shadow-sm dark:border-violet-900/40 dark:from-violet-950/40 dark:to-indigo-950/30">
+          <div className="relative overflow-hidden rounded-2xl border border-violet-200/80 bg-linear-to-br from-violet-50 to-indigo-50 p-6 shadow-sm dark:border-violet-900/40 dark:from-violet-950/40 dark:to-indigo-950/30">
             <div className="absolute bottom-0 left-0 h-20 w-20 -translate-x-6 translate-y-6 rounded-full bg-violet-200/30 dark:bg-violet-800/20" />
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 text-2xl ring-1 ring-violet-500/20 dark:bg-violet-400/10 dark:ring-violet-400/20">
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* ── Meal Planner ── Warm kitchen/terracotta style */}
-          <div className="relative overflow-hidden rounded-2xl border border-orange-200/80 bg-gradient-to-br from-orange-50 to-rose-50 p-6 shadow-sm dark:border-orange-900/40 dark:from-orange-950/40 dark:to-rose-950/30">
+          <div className="relative overflow-hidden rounded-2xl border border-orange-200/80 bg-linear-to-br from-orange-50 to-rose-50 p-6 shadow-sm dark:border-orange-900/40 dark:from-orange-950/40 dark:to-rose-950/30">
             <div className="absolute top-0 left-0 h-14 w-14 -translate-x-4 -translate-y-4 rounded-full bg-orange-200/40 dark:bg-orange-800/20" />
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/15 text-2xl ring-1 ring-orange-500/20 dark:bg-orange-400/10 dark:ring-orange-400/20">
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* ── Weather ── Fresh sky/breeze style */}
-          <div className="relative overflow-hidden rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-cyan-50 p-6 shadow-sm dark:border-sky-900/40 dark:from-sky-950/40 dark:to-cyan-950/30">
+          <div className="relative overflow-hidden rounded-2xl border border-sky-200/80 bg-linear-to-br from-sky-50 to-cyan-50 p-6 shadow-sm dark:border-sky-900/40 dark:from-sky-950/40 dark:to-cyan-950/30">
             <div className="absolute top-0 right-0 h-24 w-24 translate-x-8 -translate-y-8 rounded-full bg-sky-200/30 dark:bg-sky-800/20" />
             <div className="absolute bottom-0 right-8 h-10 w-10 translate-y-3 rounded-full bg-cyan-200/20 dark:bg-cyan-800/10" />
             <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* ── Household Projects ── Earthy workshop style */}
-          <div className="relative overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50 to-teal-50 p-6 shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/40 dark:to-teal-950/30">
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-200/80 bg-linear-to-br from-emerald-50 to-teal-50 p-6 shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/40 dark:to-teal-950/30">
             <div className="absolute bottom-0 right-0 h-16 w-16 translate-x-4 translate-y-4 rounded-full bg-emerald-200/30 dark:bg-emerald-800/20" />
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15 text-2xl ring-1 ring-emerald-500/20 dark:bg-emerald-400/10 dark:ring-emerald-400/20">

@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextResponse } from "next/server";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MiddlewareFn = (req: any) => any;
+
 vi.mock("next-auth", () => {
   return {
     default: () => {
       // NextAuth(config) returns an object with auth that wraps the callback
       return {
-        auth: (callback: Function) => callback,
+        auth: (callback: MiddlewareFn) => callback,
       };
     },
   };
@@ -49,20 +52,20 @@ describe("middleware", () => {
   describe("public routes", () => {
     it("allows access to /login", () => {
       const req = makeRequest("/login");
-      const result = (middleware as Function)(req);
+      const result = (middleware as MiddlewareFn)(req);
       expect(NextResponse.next).toHaveBeenCalled();
       expect(result).toEqual({ type: "next" });
     });
 
     it("allows access to /register", () => {
       const req = makeRequest("/register");
-      (middleware as Function)(req);
+      (middleware as MiddlewareFn)(req);
       expect(NextResponse.next).toHaveBeenCalled();
     });
 
     it("allows access to /api/auth routes", () => {
       const req = makeRequest("/api/auth/signin");
-      (middleware as Function)(req);
+      (middleware as MiddlewareFn)(req);
       expect(NextResponse.next).toHaveBeenCalled();
     });
   });
@@ -70,7 +73,7 @@ describe("middleware", () => {
   describe("protected routes", () => {
     it("redirects unauthenticated users from /dashboard to /login", () => {
       const req = makeRequest("/dashboard", null);
-      (middleware as Function)(req);
+      (middleware as MiddlewareFn)(req);
       expect(NextResponse.redirect).toHaveBeenCalled();
       const redirectUrl = (NextResponse.redirect as ReturnType<typeof vi.fn>).mock
         .calls[0][0] as URL;
@@ -79,13 +82,13 @@ describe("middleware", () => {
 
     it("allows authenticated users to access /dashboard", () => {
       const req = makeRequest("/dashboard", { user: { role: "MEMBER" } });
-      const result = (middleware as Function)(req);
+      const result = (middleware as MiddlewareFn)(req);
       expect(result).toEqual({ type: "next" });
     });
 
     it("redirects unauthenticated users from /admin to /login", () => {
       const req = makeRequest("/admin", null);
-      (middleware as Function)(req);
+      (middleware as MiddlewareFn)(req);
       expect(NextResponse.redirect).toHaveBeenCalled();
       const redirectUrl = (NextResponse.redirect as ReturnType<typeof vi.fn>).mock
         .calls[0][0] as URL;
@@ -96,7 +99,7 @@ describe("middleware", () => {
   describe("admin routes", () => {
     it("redirects non-admin users from /admin to /dashboard", () => {
       const req = makeRequest("/admin", { user: { role: "MEMBER" } });
-      (middleware as Function)(req);
+      (middleware as MiddlewareFn)(req);
       expect(NextResponse.redirect).toHaveBeenCalled();
       const redirectUrl = (NextResponse.redirect as ReturnType<typeof vi.fn>).mock
         .calls[0][0] as URL;
@@ -105,7 +108,7 @@ describe("middleware", () => {
 
     it("allows ADMIN users to access /admin", () => {
       const req = makeRequest("/admin", { user: { role: "ADMIN" } });
-      const result = (middleware as Function)(req);
+      const result = (middleware as MiddlewareFn)(req);
       expect(result).toEqual({ type: "next" });
     });
   });

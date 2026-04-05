@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/ourhome
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/oracle
     depends_on:
       db:
         condition: service_healthy
@@ -15,7 +15,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ourhome
+      POSTGRES_DB: oracle
     ports:
       - "5433:5432"
     volumes:
