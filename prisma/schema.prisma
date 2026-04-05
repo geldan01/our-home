@@ -34,6 +34,8 @@ model User {
   createdMeals        Meal[]                   @relation("CreatedMeals")
   mealRatings         MealRating[]             @relation("MealRatings")
   addedMealPlanEntries MealPlanEntry[]          @relation("AddedMealPlanEntries")
+  tvShowRatings        TvShowRating[]           @relation("TvShowRatings")
+  watchedEpisodes      WatchedEpisode[]         @relation("WatchedEpisodes")
 }
 
 model TodoList {
@@ -139,6 +141,104 @@ model MealPlanEntry {
   createdAt DateTime @default(now())
 
   @@unique([date, mealId])
+}
+
+enum TvShowStatus {
+  WATCHING
+  PAUSED
+  COMPLETED
+  DROPPED
+  PLAN_TO_WATCH
+}
+
+model Channel {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shows TvShow[]
+}
+
+model TvShow {
+  id          String       @id @default(cuid())
+  tmdbId      Int          @unique
+  imdbId      String?
+  name        String
+  overview    String?      @db.Text
+  posterPath  String?
+  backdropPath String?
+  status      TvShowStatus @default(PLAN_TO_WATCH)
+  tmdbRating  Float?
+  imdbRating  Float?
+  firstAirDate DateTime?
+  channelId   String?
+  channel     Channel?     @relation(fields: [channelId], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  seasons  TvSeason[]
+  ratings  TvShowRating[]
+}
+
+model TvSeason {
+  id           String    @id @default(cuid())
+  tmdbId       Int?
+  showId       String
+  show         TvShow    @relation(fields: [showId], references: [id], onDelete: Cascade)
+  seasonNumber Int
+  name         String?
+  overview     String?   @db.Text
+  posterPath   String?
+  airDate      DateTime?
+  episodeCount Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  episodes TvEpisode[]
+
+  @@unique([showId, seasonNumber])
+}
+
+model TvEpisode {
+  id            String    @id @default(cuid())
+  tmdbId        Int?
+  seasonId      String
+  season        TvSeason  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  episodeNumber Int
+  name          String?
+  overview      String?   @db.Text
+  airDate       DateTime?
+  tmdbRating    Float?
+  stillPath     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  watchedBy WatchedEpisode[]
+
+  @@unique([seasonId, episodeNumber])
+}
+
+model TvShowRating {
+  id     String @id @default(cuid())
+  rating Int
+  showId String
+  show   TvShow @relation(fields: [showId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("TvShowRatings", fields: [userId], references: [id])
+
+  @@unique([showId, userId])
+}
+
+model WatchedEpisode {
+  id        String    @id @default(cuid())
+  episodeId String
+  episode   TvEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation("WatchedEpisodes", fields: [userId], references: [id])
+  watchedAt DateTime  @default(now())
+
+  @@unique([episodeId, userId])
 }
 
 model WeatherCity {

@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { fetchWeather } from "@/lib/weather";
 import MealPlanWidget from "./meal-plan-widget";
+import TvWidget from "./tv-widget";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -45,6 +46,33 @@ export default async function DashboardPage() {
     where: { date: today },
     include: { meal: { select: { id: true, name: true } } },
     orderBy: { createdAt: "asc" },
+  });
+
+  const upNextEpisodes = await prisma.tvEpisode.findMany({
+    where: {
+      airDate: { lte: today },
+      season: { show: { status: "WATCHING" } },
+      watchedBy: { none: { userId: user.id } },
+    },
+    orderBy: { airDate: "desc" },
+    take: 10,
+    distinct: ["seasonId"],
+    include: {
+      season: {
+        select: {
+          seasonNumber: true,
+          show: { select: { id: true, name: true, posterPath: true } },
+        },
+      },
+    },
+  });
+
+  // Deduplicate by show — keep only the first unwatched episode per show
+  const seenShows = new Set<string>();
+  const dedupedEpisodes = upNextEpisodes.filter((ep) => {
+    if (seenShows.has(ep.season.show.id)) return false;
+    seenShows.add(ep.season.show.id);
+    return true;
   });
 
   let weatherData = null;
@@ -133,29 +161,8 @@ export default async function DashboardPage() {
               </p>
             </Link>
 
-            {/* ── TV Shows ── Cozy cinema/living room style */}
-            <div className="relative overflow-hidden rounded-2xl border border-violet-200/80 bg-linear-to-br from-violet-50 to-indigo-50 p-6 shadow-sm dark:border-violet-900/40 dark:from-violet-950/40 dark:to-indigo-950/30">
-              <div className="absolute bottom-0 left-0 h-20 w-20 -translate-x-6 translate-y-6 rounded-full bg-violet-200/30 dark:bg-violet-800/20" />
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 text-2xl ring-1 ring-violet-500/20 dark:bg-violet-400/10 dark:ring-violet-400/20">
-                  <span role="img" aria-label="TV">&#128250;</span>
-                </div>
-                <div>
-                  <h2 className="font-semibold text-violet-900 dark:text-violet-100">
-                    TV Shows
-                  </h2>
-                  <p className="text-xs text-violet-700/60 dark:text-violet-300/50">
-                    Track what you&apos;re watching
-                  </p>
-                </div>
-              </div>
-              <div className="mt-5 flex flex-col items-center justify-center rounded-xl border border-dashed border-violet-300/60 py-8 dark:border-violet-700/40">
-                <p className="text-sm font-medium text-violet-400 dark:text-violet-500">Coming soon</p>
-                <p className="mt-1 text-xs text-violet-300 dark:text-violet-600">
-                  Status, progress &amp; ratings
-                </p>
-              </div>
-            </div>
+            {/* ── TV Shows ── Up Next widget */}
+            <TvWidget episodes={dedupedEpisodes} />
 
             {/* ── Household Projects ── Earthy workshop style */}
             <div className="relative overflow-hidden rounded-2xl border border-emerald-200/80 bg-linear-to-br from-emerald-50 to-teal-50 p-6 shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/40 dark:to-teal-950/30">
