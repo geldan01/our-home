@@ -37,7 +37,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./package.json
 
-RUN npm install prisma --no-save
+RUN npm install prisma --no-save && rm -f prisma.config.ts
 
 USER nextjs
 
