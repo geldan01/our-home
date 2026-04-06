@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "TvShow" ALTER COLUMN "watchMode" SET DEFAULT 'HOUSEHOLD';

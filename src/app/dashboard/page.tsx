@@ -51,7 +51,15 @@ export default async function DashboardPage() {
   const upNextEpisodes = await prisma.tvEpisode.findMany({
     where: {
       airDate: { lte: today },
-      season: { show: { status: "WATCHING" } },
+      season: {
+        show: {
+          status: "WATCHING",
+          OR: [
+            { watchMode: "HOUSEHOLD" },
+            { ownerId: user.id },
+          ],
+        },
+      },
       watchedBy: { none: { userId: user.id } },
     },
     orderBy: { airDate: "desc" },

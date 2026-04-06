@@ -1,18 +1,32 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import AddShowSearch from "./add-show-search";
 
-export default async function TvPage() {
+export default async function TvPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string }>;
+}) {
   const session = await auth();
   if (!session) redirect("/login");
 
   const user = session.user;
   const now = new Date();
+  const { filter = "mine" } = await searchParams;
+  const showAll = filter === "all";
+
+  const ownershipFilter = showAll
+    ? {}
+    : { OR: [{ watchMode: "HOUSEHOLD" as const }, { ownerId: user.id }] };
 
   const watchingShows = await prisma.tvShow.findMany({
-    where: { status: "WATCHING" },
+    where: {
+      status: "WATCHING",
+      ...ownershipFilter,
+    },
     include: {
       channel: true,
       ratings: true,
@@ -47,7 +61,10 @@ export default async function TvPage() {
 
   // Other statuses
   const otherShows = await prisma.tvShow.findMany({
-    where: { status: { not: "WATCHING" } },
+    where: {
+      status: { not: "WATCHING" },
+      ...ownershipFilter,
+    },
     include: { channel: true, ratings: true },
     orderBy: { name: "asc" },
   });
@@ -87,6 +104,30 @@ export default async function TvPage() {
           </Link>
         </div>
 
+        {/* Filter toggle */}
+        <div className="inline-flex rounded-lg border border-violet-200 dark:border-violet-800">
+          <Link
+            href="/tv"
+            className={`rounded-l-lg px-4 py-2 text-sm font-medium transition-colors ${
+              !showAll
+                ? "bg-violet-600 text-white dark:bg-violet-500"
+                : "bg-white text-violet-700 hover:bg-violet-50 dark:bg-stone-900 dark:text-violet-300 dark:hover:bg-violet-900/30"
+            }`}
+          >
+            My Shows
+          </Link>
+          <Link
+            href="/tv?filter=all"
+            className={`rounded-r-lg border-l border-violet-200 px-4 py-2 text-sm font-medium transition-colors dark:border-violet-800 ${
+              showAll
+                ? "bg-violet-600 text-white dark:bg-violet-500"
+                : "bg-white text-violet-700 hover:bg-violet-50 dark:bg-stone-900 dark:text-violet-300 dark:hover:bg-violet-900/30"
+            }`}
+          >
+            All Shows
+          </Link>
+        </div>
+
         {/* Search to add */}
         <AddShowSearch />
 
@@ -104,9 +145,11 @@ export default async function TvPage() {
                   className="group flex gap-3 rounded-xl border border-violet-200/80 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-violet-900/40 dark:bg-stone-900/60"
                 >
                   {show.posterPath ? (
-                    <img
+                    <Image
                       src={`https://image.tmdb.org/t/p/w185${show.posterPath}`}
                       alt=""
+                      width={64}
+                      height={96}
                       className="h-24 w-16 shrink-0 rounded-lg object-cover"
                     />
                   ) : (
@@ -158,13 +201,15 @@ export default async function TvPage() {
                   >
                     <div className="flex gap-3 p-4">
                       {show.posterPath ? (
-                        <img
+                        <Image
                           src={`https://image.tmdb.org/t/p/w185${show.posterPath}`}
                           alt=""
-                          className="h-28 w-[75px] shrink-0 rounded-lg object-cover"
+                          width={75}
+                          height={112}
+                          className="h-28 w-18.75 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="flex h-28 w-[75px] shrink-0 items-center justify-center rounded-lg bg-violet-100 text-sm text-violet-400 dark:bg-violet-900/40">
+                        <div className="flex h-28 w-18.75 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-sm text-violet-400 dark:bg-violet-900/40">
                           TV
                         </div>
                       )}
@@ -230,9 +275,11 @@ export default async function TvPage() {
                     className="flex items-center gap-3 rounded-xl border border-stone-200/80 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-stone-800 dark:bg-stone-900/60"
                   >
                     {show.posterPath ? (
-                      <img
+                      <Image
                         src={`https://image.tmdb.org/t/p/w92${show.posterPath}`}
                         alt=""
+                        width={44}
+                        height={64}
                         className="h-16 w-11 shrink-0 rounded object-cover"
                       />
                     ) : (

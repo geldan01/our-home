@@ -36,6 +36,7 @@ model User {
   addedMealPlanEntries MealPlanEntry[]          @relation("AddedMealPlanEntries")
   tvShowRatings        TvShowRating[]           @relation("TvShowRatings")
   watchedEpisodes      WatchedEpisode[]         @relation("WatchedEpisodes")
+  ownedTvShows         TvShow[]                 @relation("OwnedTvShows")
 }
 
 model TodoList {
@@ -174,7 +175,9 @@ model TvShow {
   posterPath  String?
   backdropPath String?
   status      TvShowStatus @default(PLAN_TO_WATCH)
-  watchMode   WatchMode    @default(INDIVIDUAL)
+  watchMode   WatchMode    @default(HOUSEHOLD)
+  ownerId     String?
+  owner       User?        @relation("OwnedTvShows", fields: [ownerId], references: [id], onDelete: SetNull)
   tmdbRating  Float?
   imdbRating  Float?
   firstAirDate DateTime?

@@ -60,9 +60,17 @@ export async function updateChannel(id: string, formData: FormData) {
 // ── Watch Mode ──
 
 export async function updateWatchMode(showId: string, watchMode: WatchMode) {
-  await requireAuth();
-  await prisma.tvShow.update({ where: { id: showId }, data: { watchMode } });
+  const user = await requireAuth();
+  await prisma.tvShow.update({
+    where: { id: showId },
+    data: {
+      watchMode,
+      ownerId: watchMode === "INDIVIDUAL" ? user.id : null,
+    },
+  });
   revalidatePath(`/tv/${showId}`);
+  revalidatePath("/tv");
+  revalidatePath("/dashboard");
 }
 
 // ── TV Shows ──
@@ -268,9 +276,12 @@ export async function getUpNextEpisodes(limit = 10) {
   const user = await requireAuth();
   const now = new Date();
 
-  // Get all shows the user is watching
+  // Get all shows the user is watching (household or owned by them)
   const shows = await prisma.tvShow.findMany({
-    where: { status: "WATCHING" },
+    where: {
+      status: "WATCHING",
+      OR: [{ watchMode: "HOUSEHOLD" }, { ownerId: user.id }],
+    },
     include: {
       seasons: {
         orderBy: { seasonNumber: "asc" },
