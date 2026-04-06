@@ -17,6 +17,7 @@ declare module "@auth/core/types" {
 
   interface User {
     role: Role;
+    rememberMe?: boolean;
   }
 }
 
@@ -24,6 +25,8 @@ declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     role: Role;
+    rememberMe?: boolean;
+    issuedAt?: number;
   }
 }
 
@@ -35,10 +38,12 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        rememberMe: { label: "Remember Me", type: "text" },
       },
       async authorize(credentials) {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
+        const rememberMe = credentials?.rememberMe === "true";
 
         if (!email || !password) return null;
 
@@ -56,6 +61,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          rememberMe,
         };
       },
     }),

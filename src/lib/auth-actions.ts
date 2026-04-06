@@ -51,6 +51,7 @@ export async function login(
 ) {
   const email = formData.get("email") as string | null;
   const password = formData.get("password") as string | null;
+  const rememberMe = formData.get("rememberMe") === "true";
 
   if (!email || !password) {
     return { error: "Email and password are required" };
@@ -60,6 +61,7 @@ export async function login(
     await signIn("credentials", {
       email,
       password,
+      rememberMe: rememberMe ? "true" : "false",
       redirect: false,
     });
   } catch {

@@ -339,6 +339,7 @@ export async function getShowById(showId: string) {
     where: { id: showId },
     include: {
       channel: true,
+      owner: { select: { id: true, name: true } },
       ratings: true,
       seasons: {
         orderBy: { seasonNumber: "asc" },

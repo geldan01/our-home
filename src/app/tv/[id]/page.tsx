@@ -16,6 +16,8 @@ export default async function ShowDetailPage({ params }: { params: Promise<{ id:
   if (!show) notFound();
 
   const user = session.user;
+  const isOwner = !show.ownerId || show.ownerId === user.id;
+  const isReadOnly = show.watchMode === "INDIVIDUAL" && !isOwner;
   const userRating = show.ratings.find((r) => r.userId === user.id);
   const avgRating =
     show.ratings.length > 0
@@ -60,9 +62,16 @@ export default async function ShowDetailPage({ params }: { params: Promise<{ id:
             </div>
           )}
           <div className="min-w-0 flex-1 space-y-4">
-            <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">
-              {show.name}
-            </h1>
+            <div>
+              <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">
+                {show.name}
+              </h1>
+              {isReadOnly && show.owner && (
+                <p className="mt-1 text-sm text-amber-600 dark:text-amber-400">
+                  {show.owner.name ?? "Another member"}&apos;s show — read only
+                </p>
+              )}
+            </div>
 
             {/* Ratings */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500 dark:text-stone-400">
@@ -100,19 +109,23 @@ export default async function ShowDetailPage({ params }: { params: Promise<{ id:
             </div>
 
             {/* Channel */}
-            <div>
-              <p className="mb-1 text-xs font-medium text-stone-500 dark:text-stone-400">
-                Watching on
-              </p>
-              <ChannelSelector
-                showId={show.id}
-                currentChannelId={show.channelId}
-                channels={channels}
-              />
-            </div>
+            {!isReadOnly && (
+              <div>
+                <p className="mb-1 text-xs font-medium text-stone-500 dark:text-stone-400">
+                  Watching on
+                </p>
+                <ChannelSelector
+                  showId={show.id}
+                  currentChannelId={show.channelId}
+                  channels={channels}
+                />
+              </div>
+            )}
 
             {/* Status and actions */}
-            <ShowActions showId={show.id} currentStatus={show.status} watchMode={show.watchMode} />
+            {!isReadOnly && (
+              <ShowActions showId={show.id} currentStatus={show.status} watchMode={show.watchMode} />
+            )}
           </div>
         </div>
 
@@ -152,6 +165,7 @@ export default async function ShowDetailPage({ params }: { params: Promise<{ id:
                 })),
               }}
               defaultOpen={season.seasonNumber === autoOpenSeason}
+              readOnly={isReadOnly}
             />
           ))}
         </div>

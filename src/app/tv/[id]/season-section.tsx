@@ -21,9 +21,10 @@ interface SeasonSectionProps {
     }[];
   };
   defaultOpen?: boolean;
+  readOnly?: boolean;
 }
 
-export default function SeasonSection({ showId, season, defaultOpen = false }: SeasonSectionProps) {
+export default function SeasonSection({ showId, season, defaultOpen = false, readOnly = false }: SeasonSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   const [isPending, startTransition] = useTransition();
 
@@ -64,7 +65,7 @@ export default function SeasonSection({ showId, season, defaultOpen = false }: S
       </button>
       {open && (
         <div className="border-t border-violet-100 px-5 pb-4 dark:border-violet-900/30">
-          {!allWatched && (
+          {!readOnly && !allWatched && (
             <div className="flex justify-end pt-2 pb-1">
               <button
                 type="button"
@@ -82,6 +83,7 @@ export default function SeasonSection({ showId, season, defaultOpen = false }: S
               showId={showId}
               seasonNumber={season.seasonNumber}
               episode={ep}
+              readOnly={readOnly}
             />
           ))}
         </div>

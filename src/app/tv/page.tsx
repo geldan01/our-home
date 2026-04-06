@@ -16,11 +16,13 @@ export default async function TvPage({
   const user = session.user;
   const now = new Date();
   const { filter = "mine" } = await searchParams;
-  const showAll = filter === "all";
 
-  const ownershipFilter = showAll
-    ? {}
-    : { OR: [{ watchMode: "HOUSEHOLD" as const }, { ownerId: user.id }] };
+  const ownershipFilter =
+    filter === "all"
+      ? {}
+      : filter === "household"
+        ? { watchMode: "HOUSEHOLD" as const }
+        : { watchMode: "INDIVIDUAL" as const, ownerId: user.id };
 
   const watchingShows = await prisma.tvShow.findMany({
     where: {
@@ -106,26 +108,25 @@ export default async function TvPage({
 
         {/* Filter toggle */}
         <div className="inline-flex rounded-lg border border-violet-200 dark:border-violet-800">
-          <Link
-            href="/tv"
-            className={`rounded-l-lg px-4 py-2 text-sm font-medium transition-colors ${
-              !showAll
-                ? "bg-violet-600 text-white dark:bg-violet-500"
-                : "bg-white text-violet-700 hover:bg-violet-50 dark:bg-stone-900 dark:text-violet-300 dark:hover:bg-violet-900/30"
-            }`}
-          >
-            My Shows
-          </Link>
-          <Link
-            href="/tv?filter=all"
-            className={`rounded-r-lg border-l border-violet-200 px-4 py-2 text-sm font-medium transition-colors dark:border-violet-800 ${
-              showAll
-                ? "bg-violet-600 text-white dark:bg-violet-500"
-                : "bg-white text-violet-700 hover:bg-violet-50 dark:bg-stone-900 dark:text-violet-300 dark:hover:bg-violet-900/30"
-            }`}
-          >
-            All Shows
-          </Link>
+          {[
+            { value: "mine", label: "My Shows", href: "/tv" },
+            { value: "household", label: "Household", href: "/tv?filter=household" },
+            { value: "all", label: "All Shows", href: "/tv?filter=all" },
+          ].map((btn, i) => (
+            <Link
+              key={btn.value}
+              href={btn.href}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                i > 0 ? "border-l border-violet-200 dark:border-violet-800" : ""
+              } ${i === 0 ? "rounded-l-lg" : ""} ${i === 2 ? "rounded-r-lg" : ""} ${
+                filter === btn.value
+                  ? "bg-violet-600 text-white dark:bg-violet-500"
+                  : "bg-white text-violet-700 hover:bg-violet-50 dark:bg-stone-900 dark:text-violet-300 dark:hover:bg-violet-900/30"
+              }`}
+            >
+              {btn.label}
+            </Link>
+          ))}
         </div>
 
         {/* Search to add */}

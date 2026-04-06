@@ -63,6 +63,19 @@ export default function LoginPage() {
               />
             </div>
 
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                value="true"
+                defaultChecked
+                className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              />
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                Keep me signed in
+              </span>
+            </label>
+
             <button
               type="submit"
               disabled={pending}
