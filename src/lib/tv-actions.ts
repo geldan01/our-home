@@ -45,6 +45,8 @@ export async function deleteChannel(id: string) {
   await requireAuth();
   await prisma.channel.delete({ where: { id } });
   revalidatePath("/channels");
+  revalidatePath("/tv");
+  revalidatePath("/dashboard");
 }
 
 export async function updateChannel(id: string, formData: FormData) {
@@ -55,6 +57,8 @@ export async function updateChannel(id: string, formData: FormData) {
 
   await prisma.channel.update({ where: { id }, data: { name } });
   revalidatePath("/channels");
+  revalidatePath("/tv");
+  revalidatePath("/dashboard");
 }
 
 // ── Watch Mode ──
